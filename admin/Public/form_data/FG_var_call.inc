@@ -48,7 +48,7 @@ $HD_Form -> AddViewElement(gettext("ID"), "id", "25%", "center", "sort");
 $HD_Form -> AddViewElement(gettext("CALLEDSTATION"), "calledstation", "25%", "center", "sort");
 $HD_Form -> AddViewElement(gettext("ACCOUNT NUMBER"), "card_id", "25%", "center", "sort", "", "lie_link", "cc_card", "username,id", "id='%id'", "%1", "", "A2B_entity_card.php");
 
-$HD_Form -> FieldViewElement ('id, calledstation, card_id, id');
+$HD_Form -> FieldViewElement ('id, calledstation, card_id, id, sessionbill');
 
 
 
@@ -59,14 +59,14 @@ $HD_Form -> CV_DISPLAY_FILTER_ABOVE_TABLE = false;
 $HD_Form -> FG_LIMITE_DISPLAY = 10;
 
 $HD_Form -> FG_ADDITION = false;
-$HD_Form -> FG_EDITION = false;
+$HD_Form -> FG_EDITION = true;
 $HD_Form -> FG_DELETION = true;
 
 $HD_Form -> AddEditElement (gettext("CALL ID"),
          "id",
          '$value',
          "INPUT",
-         "size=10 maxlength=10",
+         "size=10 maxlength=10 readonly",
          "18",
          "",
          "" , "", "", "", "" , "", "", "");
@@ -75,7 +75,7 @@ $HD_Form -> AddEditElement (gettext("ID CARD"),
          "card_id",
          "$value",
          "POPUPVALUE",
-         "size=30 maxlength=50",
+         "size=30 maxlength=50 readonly",
          "4",
          gettext("Insert the Id CardNumber"),
           "" , "", "", "", "",
@@ -87,7 +87,7 @@ $HD_Form -> AddEditElement (gettext("CALLED NUMBER"),
          "calledstation",
          '$value',
          "INPUT",
-         "size=40 maxlength=30",
+         "size=40 maxlength=30 readonly",
          "18",
          "",
          "" , "", "", "", "" , "", "", "");
@@ -97,7 +97,7 @@ $HD_Form -> AddEditElement (gettext("Source"),
          "src",
          '$value',
          "INPUT",
-         "size=40 maxlength=30",
+         "size=40 maxlength=30 readonly",
          "18",
          "",
          "" , "", "", "", "" , "", "", "");
@@ -106,7 +106,7 @@ $HD_Form -> AddEditElement (gettext("Dnid"),
          "dnid",
          '$value',
          "INPUT",
-         "size=40 maxlength=30",
+         "size=40 maxlength=30 readonly",
          "18",
          "",
          "" , "", "", "", "" , "", "", "");
@@ -115,14 +115,24 @@ $HD_Form -> AddEditElement (gettext("Duration"),
          "sessiontime",
          '$value',
          "INPUT",
+         "size=40 maxlength=30 readonly",
+         "4",
+         "",
+         "" , "", "", "", "" , "", "", "");
+
+$HD_Form -> AddEditElement (gettext("Sell price"),
+         "sessionbill",
+         '$value',
+         "INPUT",
          "size=40 maxlength=30",
-         "18",
+         "12",
          "",
          "" , "", "", "", "" , "", "", "");
 
 
 
-$HD_Form -> FieldEditElement ('id, card_id, calledstation, src, dnid, sessiontime');
+
+$HD_Form -> FieldEditElement ('id, card_id, calledstation, src, dnid, sessiontime, sessionbill');
 
 
 // Set the filter variables
