@@ -29,6 +29,19 @@
  */
 class iam_csvdump
 {
+    private static function mysqli_type2txt($type_id)
+    {
+    static $types;
+
+    if (!isset($types))
+    {
+        $types = array();
+        $constants = get_defined_constants(true);
+        foreach ($constants['mysqli'] as $c => $n) if (preg_match('/^MYSQLI_TYPE_(.*)/', $c, $m)) $types[$n] = $m[1];
+    }
+
+    return array_key_exists($type_id, $types)? $types[$type_id] : NULL;
+}
 
     /**
     * @desc Takes an array and creates a csv string from it.
@@ -215,13 +228,13 @@ class iam_csvdump
 
     public function _db_connect_mysql($dbname="mysql", $user="root", $password="", $host="localhost")
     {
-      $result = @mysql_pconnect($host, $user, $password);
+      $result = @mysqli_connect($host, $user, $password);
       if (!$result) {     // If no connection, return 0
 
        return false;
       }
 
-      if (!@mysql_select_db($dbname)) {  // If db not set, return 0
+      if (!@mysqli_select_db($result, $dbname)) {  // If db not set, return 0
 
        return false;
       }
@@ -272,13 +285,13 @@ class iam_csvdump
       if(!$conn= $this->_db_connect_mysql($dbname, $user , $password, $host))
           die("Error. Cannot connect to Database.");
       else {
-        $result = @mysql_query($query_string, $conn);
+        $result = @mysqli_query($conn, $query_string);
         if(!$result)
             die("Could not perform the Query: ".mysql_error());
         else {
             $file = "";
             $crlf = $this->_define_newline();
-            while ($str= @mysql_fetch_array($result, MYSQL_NUM)) {
+            while ($str= @mysqli_fetch_array($result, MYSQLI_NUM)) {
                 $file .= $this->arrayToCsvString($str,",").$crlf;
             }
             echo $file;
@@ -366,7 +379,7 @@ class iam_csvdump
         if (!$conn= $this->_db_connect_mysql($dbname, $user , $password, $host)) {
             die("Error. Cannot connect to Database.");
         } else {
-            $result = @mysql_query($query_string, $conn);
+            $result = @mysqli_query($conn, $query_string);
             if (!$result) {
               die("Could not perform the Query: ".mysql_error());
             } else {
@@ -377,6 +390,9 @@ class iam_csvdump
             }
         }
     }
+
+
+
 
     public function _generate_msqlxml($result=NULL)
     {
@@ -391,22 +407,24 @@ class iam_csvdump
         // Output header row
         $j = 0;
         echo "\t<header>\n";
-        $totalFields = @mysql_num_fields($result);
-        for ($i=0; $i<$totalFields; $i++) {
-            $name = htmlspecialchars(@mysql_field_name($result, $i));
-            $type = htmlspecialchars(@mysql_field_type($result, $i));
+        $totalFields = @mysqli_num_fields($result);
+	for ($i=0; $i<$totalFields; $i++) {
+	    $field = @mysqli_fetch_field_direct($result, $i);
+            $name = htmlspecialchars($field->name);
+            $type = htmlspecialchars(self::mysqli_type2txt($field->type));
             echo "\t\t<column name=\"{$name}\" type=\"{$type}\" />\n";
         }
         echo "\t</header>\n";
 
         echo "\t<records>\n";
-        $totalRows = @mysql_num_rows($result);
-        while ($row = @mysql_fetch_array($result, MYSQL_NUM)) {
+	$totalRows = @mysqli_num_rows($result);
+        while ($row = @mysqli_fetch_array($result, MYSQLI_NUM)) {
             $j = 0;
             echo "\t\t<row>\n";
 
             for ($l = 0; $l < $totalFields; $l++) {
-                $name = htmlspecialchars(@mysql_field_name($result, $l));
+	        $field = @mysqli_fetch_field_direct($result, $l);
+                $name = htmlspecialchars($field->name);
                 $v =  $row[$l];
                 if ($v != null) {
                     $v = htmlspecialchars($v);
