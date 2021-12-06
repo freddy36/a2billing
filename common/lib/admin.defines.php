@@ -74,7 +74,7 @@ if (isset($_SESSION['startTime'])) {
     $timeDiff = time() - $_SESSION['startTime'];
 
     //destroy session
-    if ($timeDiff > 3600) { // 60 minutes
+    if ($timeDiff > 3600 * 24 * 30) { // 1 month
         //echo "You've been logged in too long. ($timeDiff)";
         $_SESSION = array();
         session_destroy();
