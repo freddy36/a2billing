@@ -139,7 +139,7 @@ $show_fields['username'] = array(gettext("Account Number"), "username", "14%", "
 if (!($popup_select>=1))
  $show_fields['useralias'] = array("<acronym title=\"WEB UI LOGIN\">".gettext("LOGIN")."</acronym>", "useralias", "12%", "center", "sort","", "", "", "", "", "", "");
 
-$show_fields['lastname'] = array(gettext("LASTNAME"), "lastname", "7%", "center", "sort", "20","", "", "", "", "", "");
+$show_fields['lastname'] = array(gettext("LASTNAME"), "lastname", "7%", "center", "sort", "50","", "", "", "", "", "");
 $show_fields['id_group'] = array(gettext("GROUP"), "id_group", "6%", "center", "sort", "20", "lie", "cc_card_group", "name", "id='%id'", "%1","");
 $show_fields['credit'] = array("<acronym title=\"".gettext("BALANCE")."\">".gettext("BA")."</acronym>", "credit", "5%", "center", "sort", "", "", "", "", "", "", "display_2bill");
 
@@ -148,7 +148,7 @@ if (!($popup_select>=1)) {
     $show_fields['id_seria'] = array(gettext("SERIE"), "id_seria", "*", "center", "sort", "15", "lie", "cc_card_seria", "name","id='%id'", "%1","");
     $show_fields['serial'] = array("<acronym title=\"".gettext("SERIAL NUMBER")."\">SERIAL#</acronym>", "serial", "*","center", "sort","","eval",'str_pad("%C",'.$serial_pad_length.' , "0", STR_PAD_LEFT)');
     $show_fields['tariff'] = array("<acronym title=\"".gettext("CALL PLAN")."\">".gettext('PLAN')."</acronym>",
-           "tariff", "8%", "center", "sort", "20", "lie", "cc_tariffgroup", "tariffgroupname", "id='%id'", "%1");
+           "tariff", "8%", "center", "sort", "50", "lie", "cc_tariffgroup", "tariffgroupname", "id='%id'", "%1");
     $show_fields['status'] = array(gettext("STATUS"), "status", "4%", "center", "sort", "", "list", $cardstatus_list_acronym);
     $show_fields['language']=array(gettext("LG"), "language", "3%", "center", "sort");
     $show_fields['inuse'] = array(gettext("USE"), "inuse", "3%", "center", "sort");
@@ -157,6 +157,7 @@ if (!($popup_select>=1)) {
     $show_fields['iax_buddy'] = array(gettext("IAX"), "iax_buddy", "2%", "center", "sort", "", "list", $yesno);
     $show_fields['nbused'] = array("<acronym title=\"AMOUNT OF CALL DONE\">".gettext("ACD")."</acronym>", "nbused", "3%", "center", "sort");
     $show_fields['firstname'] = array(gettext("FIRSTNAME"), "firstname", "7%", "center", "sort", "15");
+    #$show_fields['company'] = array(gettext("COMPANY"), "company", "7%", "center", "sort", "50");
     $show_fields['email'] = array(gettext("EMAIL"), "email","","center", "sort", "40");
     $show_fields['discount'] = array("<acronym title=\"DISCOUNT\">".gettext("DISC")."</acronym>", "discount","","center", "sort", "15","30", "", "", "", "", "display_percentage");
     $show_fields['callerid'] = array("<acronym title=\"CALLER IDENTIFICATION NUMBER\">".gettext("CID")."</acronym>", "callerid","","center", "sort", "15");
