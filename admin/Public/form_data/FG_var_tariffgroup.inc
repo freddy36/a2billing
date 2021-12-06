@@ -116,7 +116,7 @@ $HD_Form -> AddEditElement (gettext("NAME"),
 	"tariffgroupname",
 	'$value',
 	"INPUT",
-	"size=30 maxlength=20",
+	"size=50 maxlength=50",
 	"9",
 	gettext("Insert the Call Plan name "),
 	"" , "", "", "", "", "", "", "" );
