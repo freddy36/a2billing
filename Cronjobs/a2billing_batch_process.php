@@ -109,7 +109,7 @@ if ($verbose_level >= 1)
     print_r($result);
 
 if (!is_array($result)) {
-    echo "[No Recurring service to run]\n";
+    #echo "[No Recurring service to run]\n";
     write_log(LOGFILE_CRONT_BATCH_PROCESS, basename(__FILE__) . ' line:' . __LINE__ . "[ No Recurring service to run]");
     exit ();
 }
