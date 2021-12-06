@@ -106,7 +106,12 @@ class Realtime
                                     $line = "";
                                     foreach ($codecs as $value)
                                         $line .= trim($list_names[$i]) . '=' . $value . "\n";
-                                } else {
+				} else if (trim($list_names[$i]) == 'setvar') { // hack/fix for setvar to allow multiple variables and convert : to =
+                                    $vars = explode(",", $data[$i +1]);
+                                    $line = "";
+                                    foreach ($vars as $value)
+                                        $line .= trim($list_names[$i]) . '=' . str_replace(":", "=", $value) . "\n";
+				} else {
                                     $line = (trim($list_names[$i]) . '=' . $data[$i +1] . "\n");
                                 }
                                 if (fwrite($fd, $line) === FALSE) {
