@@ -1,4 +1,4 @@
-
+This is a fork which contains some modifications/fixes for a2billing which we use on a legacy system. many quick and dirty fixes! Don't use a2billing for any new systems!
 
 .. image:: https://github.com/Star2Billing/a2billing/raw/master/common/images/logo/a2billing.png
 
