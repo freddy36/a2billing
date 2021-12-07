@@ -2575,16 +2575,24 @@ class A2Billing
                     $this->debug(DEBUG, $agi, __FILE__, __LINE__, "[Overwrite callerID security : " . $this->CallerID . "]");
 
                     if ($agi->request['agi_calleridname'] == $this->accountcode) {
-                        $this->CallerID = '0';
+                        #$this->CallerID = '0';
+                        $this->CallerID = $agi->request['agi_callerid'];
                     } else {
-                        $this->CallerID = $agi->request['agi_calleridname'];
+                        $this->CallerID = $agi->request['agi_callerid'];
                     }
                 } else {
                     $this->debug(DEBUG, $agi, __FILE__, __LINE__, "[REQUESTED SetCallerID : " . $this->CallerID . "]");
                 }
 
+                $cid_preferred = $this->CallerID;
                 // IF REQUIRED, VERIFY THAT THE CALLERID IS LEGAL
                 $cid_sanitized = $this->CallerID;
+
+                $screening = $agi->get_variable("screening");
+                $screening = $screening['data'];
+                $screening = ($screening === "false" ? false : true);
+                $this->debug(DEBUG, $agi, __FILE__, __LINE__, "[A2Billing] screening: ".($screening ? "true" : "false")."\n");
+
                 if (strcasecmp($this->agiconfig['cid_sanitize'], 'DID') == 0 || strcasecmp($this->agiconfig['cid_sanitize'], 'CID') == 0 || strcasecmp($this->agiconfig['cid_sanitize'], 'BOTH') == 0) {
                     $cid_sanitized = $this->callingcard_cid_sanitize($agi);
                     $this->debug(WRITELOG, $agi, __FILE__, __LINE__, "[TRY : callingcard_cid_sanitize]");
@@ -2592,11 +2600,52 @@ class A2Billing
                 }
 
                 if (strlen($cid_sanitized) > 0) {
-                    $agi->set_callerid($cid_sanitized);
-                    $this->debug(DEBUG, $agi, __FILE__, __LINE__, "[EXEC SetCallerID : " . $cid_sanitized . "]");
+                    $this->debug(DEBUG, $agi, __FILE__, __LINE__, "[CID_SANITIZED : " . $cid_sanitized . "]");
                 } else {
                     $this->debug(DEBUG, $agi, __FILE__, __LINE__, "[CANNOT SetCallerID : cid_san is empty]");
                 }
+
+                $cid_asserted = $cid_sanitized;
+                if (strlen($cid_asserted) <= 1) {
+                    $this->debug(DEBUG, $agi, __FILE__, __LINE__, "[USING USERNAME as CID : " . $this->username . "]");
+                    $cid_asserted = $this->username;
+                }
+                if (substr($cid_asserted, 0, 2) === "00")
+                    $cid_asserted = "+".substr($cid_asserted, 2);
+
+                if (substr($cid_preferred, 0, 2) === "00")
+                    $cid_preferred = "+".substr($cid_preferred, 2);
+
+                $this->debug(DEBUG, $agi, __FILE__, __LINE__, "[CID PREFERED late : " . $cid_preferred . "]");
+
+                if ($screening)
+                {
+                    $this->debug(DEBUG, $agi, __FILE__, __LINE__, "[ SET CallerId (screening) : " . $cid_asserted . "]");
+                    $this->CallerID = $cid_asserted;
+                    $cid_preferred = $cid_asserted;
+                    $agi->set_callerid($cid_asserted);
+                }
+                // Copy privacy header
+                $privacy = $agi->get_variable("SIP_HEADER(Privacy)");
+                $privacy = $privacy['data'];
+
+                if (strlen($privacy) <= 0) {
+                    $rpid = $agi->get_variable("SIP_HEADER(Remote-Party-ID)");
+                    $rpid = $rpid['data'];
+                    $this->debug(DEBUG, $agi, __FILE__, __LINE__, "[A2Billing] Remote-Party-ID '$rpid'\n");
+                    if (strpos($rpid, "privacy=full") !== false)
+                    {
+                        $privacy = "id";
+                    }
+                }
+                if (strlen($privacy) > 0) {
+                    $res_set = $agi->exec("SIPAddHeader \"Privacy: ".addslashes($privacy)."\"");
+                }
+
+                $hostname = gethostname();
+
+                $res_set = $agi->exec("SIPAddHeader \"P-Asserted-Identity: <sip:".addslashes($cid_asserted)."@".$hostname.";user=phone>\"");
+                $res_set = $agi->exec("SIPAddHeader \"P-Preferred-Identity: <sip:".addslashes($cid_preferred)."@".$hostname.";user=phone>\"");
             }
         }
 
