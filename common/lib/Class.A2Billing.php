@@ -2637,7 +2637,12 @@ class A2Billing
                     {
                         $privacy = "id";
                     }
+		}
+
+                if (strlen($privacy) <= 0) {
+                    $privacy = "none";
                 }
+
                 if (strlen($privacy) > 0) {
                     $res_set = $agi->exec("SIPAddHeader \"Privacy: ".addslashes($privacy)."\"");
                 }
