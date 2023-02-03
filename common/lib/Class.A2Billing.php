@@ -2592,6 +2592,14 @@ class A2Billing
                 $screening = $screening['data'];
                 $screening = ($screening === "false" ? false : true);
                 $this->debug(DEBUG, $agi, __FILE__, __LINE__, "[A2Billing] screening: ".($screening ? "true" : "false")."\n");
+                if (!$screening) {
+                    $cid_pi = $agi->get_variable("SIP_HEADER(P-Preferred-Identity)");
+                    $cid_pi = $cid_pi['data'];
+                    if (preg_match('/sip:(.*?)@/', $cid_pi, $match))
+                        $cid_preferred = $match[1];
+                    $this->debug(DEBUG, $agi, __FILE__, __LINE__, "[A2Billing] P-Preferred-Identity: ".$cid_pi."\n");
+                }
+
 
                 if (strcasecmp($this->agiconfig['cid_sanitize'], 'DID') == 0 || strcasecmp($this->agiconfig['cid_sanitize'], 'CID') == 0 || strcasecmp($this->agiconfig['cid_sanitize'], 'BOTH') == 0) {
                     $cid_sanitized = $this->callingcard_cid_sanitize($agi);
@@ -2612,9 +2620,14 @@ class A2Billing
                 }
                 if (substr($cid_asserted, 0, 2) === "00")
                     $cid_asserted = "+".substr($cid_asserted, 2);
+                elseif (substr($cid_asserted, 0, 1) === "0")
+                    $cid_asserted = "+49".substr($cid_asserted, 1);
 
                 if (substr($cid_preferred, 0, 2) === "00")
                     $cid_preferred = "+".substr($cid_preferred, 2);
+                elseif (substr($cid_preferred, 0, 1) === "0")
+                    $cid_preferred = "+49".substr($cid_preferred, 1);
+
 
                 $this->debug(DEBUG, $agi, __FILE__, __LINE__, "[CID PREFERED late : " . $cid_preferred . "]");
 
@@ -2637,7 +2650,7 @@ class A2Billing
                     {
                         $privacy = "id";
                     }
-		}
+                }
 
                 if (strlen($privacy) <= 0) {
                     $privacy = "none";
